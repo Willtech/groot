@@ -7,6 +7,13 @@ It is designed for administrators, developers, and power users who want a simple
 
 ---
 
+**\# groot: a friendly sudo wrapper**  
+**\# Author/Developer Manager: Reaper Harvester / Oceans Ginsberg / Wills / master Damian Williamson Grad. / Professor. Damian A. James Williamson Grad. / Graduate. Damian Williamson**  
+**\# Founder of Willtech, Swan Hill, Victoria**  
+**\# AI Collaboration: Microsoft Copilot (technical design + documentation)**
+
+---
+
 ## 🌱 Features
 
 - Run commands as root using a clean wrapper  
