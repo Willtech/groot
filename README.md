@@ -1,12 +1,6 @@
 # **groot — A Friendly Root Command Wrapper for Linux**
 
-`groot` is a lightweight Bash utility that behaves like a more conversational version of `sudo`.  
-It provides two modes:
-
-- **Command mode** — run a single command with root privileges  
-- **Interactive mode** — drop into a full root login shell
-
-It is designed for administrators, developers, and power users who want a simple, memorable way to elevate privileges without typing long commands.
+`groot` is a lightweight Bash utility that behaves like a more conversational version of `sudo`. It provides two modes: running a single command with elevated privileges or dropping into a full root login shell. It is designed for administrators, developers, and power users who want a simple, memorable way to elevate privileges without typing long commands.
 
 ---
 
@@ -30,7 +24,7 @@ sudo nano /usr/local/bin/groot
 
 Paste the following:
 
-```BASH
+```bash
 #!/usr/bin/env bash
 
 # groot: a friendly sudo wrapper
@@ -47,7 +41,7 @@ else
 fi
 ```
 
-Save and exit, then make it executable:
+Make it executable:
 
 ```bash
 sudo chmod +x /usr/local/bin/groot
@@ -57,41 +51,29 @@ sudo chmod +x /usr/local/bin/groot
 
 ## 🧪 Usage
 
-### **Interactive root shell**
+### Interactive root shell
 ```
 groot
 ```
 
-This opens a full root login shell (`sudo su -`).
-
-### **Run a single command as root**
+### Run a single command as root
 ```
 groot dnf update
 ```
 
-Equivalent to:
-```
-sudo dnf update
-```
-
-### **Check who you are**
+### Check identity
 ```
 groot whoami
-```
-
-Output:
-```
-root
 ```
 
 ---
 
 ## 🔒 Security Notes
 
-- `groot` does **not** bypass authentication.  
+- `groot` does not bypass authentication.  
 - It relies entirely on your existing `sudo` configuration.  
-- If your user is not allowed to run `sudo`, `groot` will not elevate privileges.  
-- It does not store passwords, modify PAM, or weaken system security.
+- If your user cannot run `sudo`, `groot` cannot elevate privileges.  
+- No passwords are stored, and no security mechanisms are altered.
 
 ---
 
@@ -110,11 +92,29 @@ sudo rm /usr/local/bin/groot
 
 ---
 
-## 📜 License
+# **LICENSE (MIT License)**
 
-You may license this however you prefer (MIT, Apache‑2.0, GPL‑3.0, proprietary).  
-If you want, I can generate a matching LICENSE file.
+```
+MIT License
 
----
+Copyright (c) 2026 Willtech
 
-If you want to extend `groot` with logging, auditing, banners, or safety prompts, I can help you design those features next.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights  
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
+copies of the Software, and to permit persons to whom the Software is  
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in  
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING  
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  
+DEALINGS IN THE SOFTWARE.
+```
+* `chmod +x groot` may be modified.

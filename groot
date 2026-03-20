@@ -10,5 +10,7 @@ if [ $# -eq 0 ]; then
     exec sudo su -
 else
     # Arguments provided → run them as a root command
-    exec sudo "$@"
+    cmd="$*"
+    bash -c "exec sudo $cmd"
+    exec sudo su -
 fi
