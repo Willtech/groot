@@ -14,7 +14,8 @@ case "$1" in
             exec sudo su -
         else
             # Arguments provided → run them as a root command
-            cmd="$*"
+            cmd=$(printf ' %q' "$@")
+            cmd=${cmd:1}
             bash -c "exec sudo $cmd"
             exec sudo su -
         fi
