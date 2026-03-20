@@ -1,0 +1,21 @@
+#!/bin/bash
+## groot Install
+# Install script for groot
+# install script
+# Source Code produced by Willtech 2024
+# v1.1 hand coded by HRjJ
+
+CompletedMessage="Usage: groot PID\r\nCompleted!"
+
+if [ `whoami` != root ]; then
+    echo Please run as sudo user
+    exit
+fi
+
+shc -f groot
+gcc groot.x.c -o groot.bin
+
+cp ./groot.bin /usr/bin/groot
+chmod +x /usr/bin/groot
+
+echo -e ${CompletedMessage}
