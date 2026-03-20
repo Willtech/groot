@@ -76,6 +76,15 @@ groot dnf update
 groot whoami
 ```
 
+### Optional: Run a command then enter a root shell
+```
+groot --shell-after dnf update`
+```
+This will run the command with sudo, then drop you into a root login shell.
+
+
+
+
 ---
 
 ## 🔒 Security Notes

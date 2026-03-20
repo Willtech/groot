@@ -5,12 +5,25 @@
 # Founder of Willtech, Swan Hill, Victoria
 # AI Collaboration: Microsoft Copilot (technical design + documentation)
 
-if [ $# -eq 0 ]; then
-    # No arguments → open a root login shell
-    exec sudo su -
-else
-    # Arguments provided → run them as a root command
-    cmd="$*"
-    bash -c "exec sudo $cmd"
-    exec sudo su -
-fi
+#!/usr/bin/env bash
+
+case "$1" in
+    --shell-after)
+        shift
+        if [ $# -eq 0 ]; then
+            exec sudo su -
+        else
+            # Arguments provided → run them as a root command
+            cmd="$*"
+            bash -c "exec sudo $cmd"
+            exec sudo su -
+        fi
+        ;;
+    *)
+        if [ $# -eq 0 ]; then
+            exec sudo su -
+        else
+            exec sudo "$@"
+        fi
+        ;;
+esac
