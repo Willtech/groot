@@ -106,7 +106,7 @@ Output:
 
 ### Flags work in any order
 ```
-groot --shell-after --dry-run 'echo hi'
+groot --shell-after --dry-run echo hi
 groot --dry-run --shell-after echo hi
 ```
 
