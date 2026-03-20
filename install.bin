@@ -1,0 +1,24 @@
+#!/bin/bash
+## groot Install
+# Install script for groot
+# Source Code produced by Willtech 2024
+# v1.2 updated for modern shc
+
+CompletedMessage="Usage: groot {filespec]"
+
+if [ "$(whoami)" != "root" ]; then
+    echo "Please run as sudo user"
+    exit 1
+fi
+
+# Compile groot using explicit interpreter for shc
+shc -f groot -i /usr/bin/bash
+
+# Build the binary
+gcc groot.x.c -o groot.bin
+
+# Install
+cp ./groot.bin /usr/bin/groot
+chmod +x /usr/bin/groot
+
+echo -e "${CompletedMessage}"
