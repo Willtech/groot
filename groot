@@ -1,23 +1,137 @@
 #!/usr/bin/bash
 
-# groot: a friendly sudo wrapper
-# Author/Developer Manager: Reaper Harvester / Oceans Ginsberg / Wills / master Damian Williamson Grad. / Professor. Damian A. James Williamson Grad. / Graduate. Damian Williamson
+###############################################################################
+# groot — a friendly sudo wrapper
+#
+# Author / Developer Manager:
+#   Reaper Harvester / Oceans Ginsberg / Wills /
+#   master Damian Williamson Grad. /
+#   Professor. Damian A. James Williamson Grad. /
+#   Graduate. Damian Williamson
+#
 # Founder of Willtech, Swan Hill, Victoria
 # AI Collaboration: Microsoft Copilot (technical design + documentation)
+#
+# Behaviour summary:
+#   groot                → open a root login shell
+#   groot CMD ARGS...    → run CMD ARGS... as root (sudo "$@")
+#   groot --shell-after CMD ARGS...
+#                        → run CMD ARGS... literally, then drop into root shell
+#
+#   groot --help         → show help
+#   groot --version      → show version
+#
+###############################################################################
 
+VERSION="1.3.0"   # Increment as you release new builds
+
+
+###############################################################################
+# show_help
+#   Prints detailed usage information.
+###############################################################################
+show_help() {
+    cat <<EOF
+groot — a friendly sudo wrapper
+
+Usage:
+  groot                     Open a root login shell
+  groot <command> [args]    Run a single command as root
+  groot --shell-after CMD   Run CMD as root, then drop into a root shell
+
+Options:
+  --shell-after             Execute the provided command literally, then open
+                            a root login shell.
+  --help, -h                Show this help message.
+  --version                 Show version information.
+
+Examples:
+  groot whoami
+  groot dnf update
+  groot --shell-after 'echo "hello; id"'
+
+Notes:
+  - groot never bypasses sudo authentication.
+  - groot preserves argument boundaries and literal characters.
+  - Unquoted semicolons are interpreted by your shell before groot runs.
+EOF
+}
+
+
+###############################################################################
+# show_version
+#   Prints version and authorship.
+###############################################################################
+show_version() {
+    cat <<EOF
+groot version ${VERSION}
+Author: Wills
+Willtech — Swan Hill, Victoria
+EOF
+}
+
+
+###############################################################################
+# Main command dispatcher
+###############################################################################
 case "$1" in
+
+    ###########################################################################
+    # --help → show help and exit
+    ###########################################################################
+    --help|-h)
+        show_help
+        exit 0
+        ;;
+
+    ###########################################################################
+    # --version → show version and exit
+    ###########################################################################
+    --version)
+        show_version
+        exit 0
+        ;;
+
+    ###########################################################################
+    # --shell-after → run literal command, then root shell
+    #
+    # This mode reconstructs the entire command line into a single literal
+    # string using printf '%q'. This emulates the effect of the user having
+    # typed:
+    #
+    #   groot --shell-after 'echo "hello; id"'
+    #
+    # and ensures semicolons, pipes, redirects, etc. are preserved exactly.
+    ###########################################################################
     --shell-after)
         shift
         if [ $# -eq 0 ]; then
+            # No command provided → just open a root shell
             exec sudo su -
         else
-            # Arguments provided → run them as a root command
+            # Safely reconstruct literal command
             cmd=$(printf ' %q' "$@")
             cmd=${cmd:1}
+
+            # Execute the literal command as root
             bash -c "exec sudo $cmd"
+
+            # After command completes, drop into root login shell
             exec sudo su -
         fi
         ;;
+
+    ###########################################################################
+    # Default behaviour
+    #
+    # groot
+    #   → open a root login shell
+    #
+    # groot CMD ARGS...
+    #   → run CMD ARGS... as root using exec sudo "$@"
+    #
+    # This preserves argument boundaries and avoids re-parsing.
+    ###########################################################################
     *)
         if [ $# -eq 0 ]; then
             exec sudo su -
