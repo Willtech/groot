@@ -1,0 +1,155 @@
+.TH GROOT 1 "March 2026" "groot 1.5.0" "User Commands"
+.SH NAME
+groot \- a friendly sudo wrapper for Linux
+
+.SH SYNOPSIS
+.B groot
+.br
+.B groot
+<command> [args]
+.br
+.B groot
+[\-\-dry\-run] [\-\-shell\-after] <command> [args]
+.br
+.B groot
+[\-\-help] [\-\-version]
+
+.SH DESCRIPTION
+.B groot
+is a lightweight Bash utility that provides a clean, expressive interface for
+privilege elevation. It wraps
+.B sudo
+with predictable behaviour, optional literal\-command execution, and a safe
+dry\-run preview mode. It is designed for administrators, developers, and
+power users who want a simple, memorable way to elevate privileges without
+typing long commands.
+
+When invoked with no arguments,
+.B groot
+opens a full root login shell. When given a command, it executes that command
+as root using
+.B sudo.
+When used with
+.BR \-\-shell\-after ,
+groot executes the command literally and then opens a root login shell.
+When used with
+.BR \-\-dry\-run ,
+groot prints what it would execute without running anything.
+
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help information and exit.
+
+.TP
+.B \-\-version
+Show version information and exit.
+
+.TP
+.B \-\-dry\-run
+Do not execute anything. Instead, print the exact
+.B sudo
+command that groot would run. This applies to both normal and literal modes.
+
+.TP
+.B \-\-shell\-after
+Execute the provided command literally, preserving quoting, semicolons,
+pipes, and other shell characters, then open a root login shell.
+
+.TP
+.B \-\-dry\-run \-\-shell\-after
+Combine both behaviours: print the literal command groot would run, followed
+by a note indicating that a root login shell would be opened. No commands are
+executed.
+
+.SH BEHAVIOUR
+.PP
+.B No arguments:
+.RS
+Opens a root login shell:
+.br
+.B sudo su \-
+.RE
+
+.PP
+.B Normal command execution:
+.RS
+Executes the command as root:
+.br
+.B sudo <command> [args]
+.RE
+
+.PP
+.B Literal execution with shell:
+.RS
+Reconstructs the command literally using
+.B printf '%q'
+and executes it as root, then opens a root login shell.
+.RE
+
+.PP
+.B Dry\-run:
+.RS
+Prints the exact sudo command groot would run, without executing anything.
+.RE
+
+.PP
+.B Dry\-run + shell\-after:
+.RS
+Prints the literal sudo command and indicates that a root shell would follow.
+No commands are executed.
+.RE
+
+.SH EXAMPLES
+.TP
+Open a root login shell:
+.RS
+.B groot
+.RE
+
+.TP
+Run a command as root:
+.RS
+.B groot dnf update
+.RE
+
+.TP
+Run a command literally, then enter a root shell:
+.RS
+.B groot \-\-shell\-after 'echo "hello; id"'
+.RE
+
+.TP
+Preview what groot would run:
+.RS
+.B groot \-\-dry\-run dnf install nginx
+.RE
+
+.TP
+Preview literal execution and shell\-after:
+.RS
+.B groot \-\-dry\-run \-\-shell\-after 'echo "hello; id"'
+.RE
+
+.SH SECURITY
+.B groot
+does not bypass authentication. It relies entirely on the system's existing
+.B sudo
+configuration. No passwords are stored, and no security mechanisms are
+modified. Literal commands are reconstructed safely using
+.B printf '%q'.
+Unquoted semicolons are interpreted by the user's shell before groot runs.
+
+.SH AUTHOR
+MR. Damian A. James Williamson Grad.
+.br
+Willtech, Swan Hill, Victoria.
+.br
+AI Collaboration: Microsoft Copilot (technical design and documentation).
+
+.SH LICENSE
+MIT License. See the project repository for full text.
+
+.SH SEE ALSO
+.BR sudo (8),
+.BR bash (1)
