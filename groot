@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# groot: a friendly sudo wrapper
+# Author/Developer Manager: Reaper Harvester / Oceans Ginsberg / Wills / master Damian Williamson Grad. / Professor. Damian A. James W>
+# Founder of Willtech, Swan Hill, Victoria
+# AI Collaboration: Microsoft Copilot (technical design + documentation)
+
+if [ $# -eq 0 ]; then
+    # No arguments → open a root login shell
+    exec sudo su -
+else
+    # Arguments provided → run them as a root command
+    exec sudo "$@"
+fi
