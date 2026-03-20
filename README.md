@@ -24,7 +24,7 @@ sudo nano /usr/local/bin/groot
 
 Paste the following:
 
-```BASH
+```bash
 #!/usr/bin/env bash
 
 # groot: a friendly sudo wrapper
