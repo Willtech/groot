@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 ###############################################################################
 # groot — a friendly sudo wrapper
@@ -11,56 +11,40 @@
 #
 # Founder of Willtech, Swan Hill, Victoria
 # AI Collaboration: Microsoft Copilot (technical design + documentation)
-#
-# Behaviour summary:
-#   groot                → open a root login shell
-#   groot CMD ARGS...    → run CMD ARGS... as root (sudo "$@")
-#   groot --shell-after CMD ARGS...
-#                        → run CMD ARGS... literally, then drop into root shell
-#
-#   groot --help         → show help
-#   groot --version      → show version
-#
 ###############################################################################
 
-VERSION="1.3.0"   # Increment as you release new builds
+VERSION="1.3.0"
 
+# Flags
+dry_run=false
+shell_after=false
+
+# Collect non-flag arguments
+cmd_args=()
 
 ###############################################################################
-# show_help
-#   Prints detailed usage information.
+# show_help — prints usage information
 ###############################################################################
 show_help() {
-    cat <<EOF
+            cat <<EOF
 groot — a friendly sudo wrapper
 
 Usage:
   groot                     Open a root login shell
-  groot <command> [args]    Run a single command as root
-  groot --shell-after CMD   Run CMD as root, then drop into a root shell
+  groot <cmd> [args]        Run a command as root
+  groot --shell-after CMD   Run CMD as root, then open a root shell
+  groot --dry-run CMD       Show what groot *would* run
 
 Options:
-  --shell-after             Execute the provided command literally, then open
-                            a root login shell.
-  --help, -h                Show this help message.
-  --version                 Show version information.
-
-Examples:
-  groot whoami
-  groot dnf update
-  groot --shell-after 'echo "hello; id"'
-
-Notes:
-  - groot never bypasses sudo authentication.
-  - groot preserves argument boundaries and literal characters.
-  - Unquoted semicolons are interpreted by your shell before groot runs.
+  --help, -h                Show this help message
+  --version                 Show version information
+  --dry-run                 Do not execute anything; only show actions
+  --shell-after             After running CMD, open a root login shell
 EOF
 }
 
-
 ###############################################################################
-# show_version
-#   Prints version and authorship.
+# show_version — prints version and authorship
 ###############################################################################
 show_version() {
     cat <<EOF
@@ -70,73 +54,86 @@ Willtech — Swan Hill, Victoria
 EOF
 }
 
+###############################################################################
+# Parse flags (order-independent)
+###############################################################################
+for arg in "$@"; do
+    case "$arg" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --version)
+            show_version
+            exit 0
+            ;;
+        --dry-run)
+            dry_run=true
+            ;;
+        --shell-after)
+            shell_after=true
+            ;;
+        *)
+            cmd_args+=("$arg")
+            ;;
+    esac
+done
+
 
 ###############################################################################
-# Main command dispatcher
+# Helper: print dry-run for normal mode
 ###############################################################################
-case "$1" in
+dry_run_normal() {
+    printf "[groot dry-run] sudo"
+    for a in "${cmd_args[@]}"; do
+        printf " %q" "$a"
+    done
+    printf "\n"
+}
 
-    ###########################################################################
-    # --help → show help and exit
-    ###########################################################################
-    --help|-h)
-        show_help
+###############################################################################
+# Helper: print dry-run for literal mode
+###############################################################################
+dry_run_literal() {
+    literal=$(printf ' %q' "${cmd_args[@]}")
+    literal=${literal:1}
+    printf "[groot dry-run] sudo %s\n" "$literal"
+    printf "[groot dry-run] (then would open a root login shell)\n"
+}
+
+###############################################################################
+# EXECUTION LOGIC
+###############################################################################
+
+# Case 1: No command provided
+if [ ${#cmd_args[@]} -eq 0 ]; then
+    if $dry_run; then
+        echo "[groot dry-run] sudo su -"
+        $shell_after && echo "[groot dry-run] (then would open a root login shell)"
         exit 0
-        ;;
+    fi
+    exec sudo su -
+fi
 
-    ###########################################################################
-    # --version → show version and exit
-    ###########################################################################
-    --version)
-        show_version
-        exit 0
-        ;;
+# Case 2: dry-run + shell-after
+if $dry_run && $shell_after; then
+    dry_run_literal
+    exit 0
+fi
 
-    ###########################################################################
-    # --shell-after → run literal command, then root shell
-    #
-    # This mode reconstructs the entire command line into a single literal
-    # string using printf '%q'. This emulates the effect of the user having
-    # typed:
-    #
-    #   groot --shell-after 'echo "hello; id"'
-    #
-    # and ensures semicolons, pipes, redirects, etc. are preserved exactly.
-    ###########################################################################
-    --shell-after)
-        shift
-        if [ $# -eq 0 ]; then
-            # No command provided → just open a root shell
-            exec sudo su -
-        else
-            # Safely reconstruct literal command
-            cmd=$(printf ' %q' "$@")
-            cmd=${cmd:1}
+# Case 3: dry-run only
+if $dry_run; then
+    dry_run_normal
+    exit 0
+fi
 
-            # Execute the literal command as root
-            bash -c "exec sudo $cmd"
+# Case 4: shell-after only
+if $shell_after; then
+    literal=$(printf ' %q' "${cmd_args[@]}")
+    literal=${literal:1}
+    bash -c "exec sudo $literal"
+    exec sudo su -
+fi
 
-            # After command completes, drop into root login shell
-            exec sudo su -
-        fi
-        ;;
-
-    ###########################################################################
-    # Default behaviour
-    #
-    # groot
-    #   → open a root login shell
-    #
-    # groot CMD ARGS...
-    #   → run CMD ARGS... as root using exec sudo "$@"
-    #
-    # This preserves argument boundaries and avoids re-parsing.
-    ###########################################################################
-    *)
-        if [ $# -eq 0 ]; then
-            exec sudo su -
-        else
-            exec sudo "$@"
-        fi
-        ;;
-esac
+# Case 5: normal execution
+exec sudo "${cmd_args[@]}"

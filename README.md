@@ -1,16 +1,17 @@
 # **groot — A Friendly Root Command Wrapper for Linux**
 
-`groot` is a lightweight Bash utility that behaves like a more conversational version of `sudo`.  
-It provides two modes: running a single command with elevated privileges or dropping into a full root login shell.  
+`groot` is a lightweight BASH utility that behaves like a more conversational version of `sudo`.
+It provides two modes: running a single command with elevated privileges or dropping into a full root login shell.
 
 It is designed for administrators, developers, and power users who want a simple, memorable way to elevate privileges without typing long commands.
-
 ---
 
-**\# groot: a friendly sudo wrapper**  
-**\# Author/Developer Manager: Reaper Harvester / Oceans Ginsberg / Wills / master Damian Williamson Grad. / Professor. Damian A. James Williamson Grad. / Graduate. Damian Williamson**  
-**\# Founder of Willtech, Swan Hill, Victoria**  
-**\# AI Collaboration: Microsoft Copilot (technical design + documentation)**
+### **Authorship & Lineage**
+
+**groot: a friendly sudo wrapper**  
+**Author / Developer Manager:** Reaper Harvester / Oceans Ginsberg / Wills / master Damian Williamson Grad. / Professor. Damian A. James Williamson Grad. / Graduate. Damian Williamson  
+**Founder of Willtech, Swan Hill, Victoria**  
+**AI Collaboration:** Microsoft Copilot (technical design + documentation)
 
 ---
 
@@ -18,9 +19,14 @@ It is designed for administrators, developers, and power users who want a simple
 
 - Run commands as root using a clean wrapper  
 - Drop into a root login shell when no arguments are provided  
-- Uses `sudo` safely and correctly  
-- Minimal, readable Bash code  
-- Works on Fedora, RHEL, CentOS, Debian, Ubuntu, Arch, and any system with `sudo`  
+- Execute a command literally, then drop into a root shell (`--shell-after`)  
+- Uses `sudo` safely and correctly
+- Preview what groot *would* run without executing anything (`--dry-run`)  
+- Flags are order‑independent (`--dry-run --shell-after` works in any order)  
+- Safe argument handling using `"$@"`  
+- Literal command reconstruction using `printf '%q'`  
+- Built‑in help (`--help`, `-h`) and version reporting (`--version`)  
+- Works on Fedora, RHEL, CentOS, Debian, Ubuntu, Arch, and any system with sudo  
 
 ---
 
@@ -32,7 +38,7 @@ Create the script:
 sudo nano /usr/local/bin/groot
 ```
 
-Paste the following:
+Paste the source code:
 
 ```bash
 #!/usr/bin/env bash
@@ -51,17 +57,16 @@ else
 fi
 ```
 
-Make it executable:
+Make it executble.
 
 ```bash
 sudo chmod +x /usr/local/bin/groot
 ```
-
 ---
 
 ## 🧪 Usage
 
-### Interactive root shell
+### Open a root login shell
 ```
 groot
 ```
@@ -71,28 +76,59 @@ groot
 groot dnf update
 ```
 
-### Check identity
+### Run a command literally, then enter a root shell
 ```
-groot whoami
+groot --shell-after echo "hello; id"
 ```
 
-### Optional: Run a command then enter a root shell
+This preserves semicolons, pipes, redirects, and quoting exactly as written.
+
+### Preview what groot *would* run (no execution)
 ```
-groot --shell-after dnf update`
+groot --dry-run dnf install nginx
 ```
-This will run the command with sudo, then drop you into a root login shell.
 
+Output:
+```
+[groot dry-run] sudo dnf install nginx
+```
 
+### Preview literal command + shell-after
+```
+groot --dry-run --shell-after echo "hello; id"
+```
 
+Output:
+```
+[groot dry-run] sudo echo "hello; id"
+[groot dry-run] (then would open a root login shell)
+```
+
+### Flags work in any order
+```
+groot --shell-after --dry-run 'echo hi'
+groot --dry-run --shell-after echo hi
+```
+
+Both produce the same dry‑run output.
+
+### Help and version
+```
+groot --help
+groot -h
+groot --version
+```
 
 ---
 
 ## 🔒 Security Notes
 
-- `groot` does not bypass authentication.  
+- `groot` does **not** bypass authentication.  
 - It relies entirely on your existing `sudo` configuration.  
-- If your user cannot run `sudo`, `groot` cannot elevate privileges.  
-- No passwords are stored, and no security mechanisms are altered.
+- No passwords are stored, and no security mechanisms are altered.  
+- Literal commands are safely reconstructed using `printf '%q'`.  
+- Unquoted semicolons are interpreted by your shell before groot runs — this is expected Unix behaviour.  
+- `--dry-run` never executes anything and never elevates privileges.  
 
 ---
 
