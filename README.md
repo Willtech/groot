@@ -1,6 +1,9 @@
 # **groot — A Friendly Root Command Wrapper for Linux**
 
-`groot` is a lightweight Bash utility that behaves like a more conversational version of `sudo`. It provides two modes: running a single command with elevated privileges or dropping into a full root login shell. It is designed for administrators, developers, and power users who want a simple, memorable way to elevate privileges without typing long commands.
+`groot` is a lightweight Bash utility that behaves like a more conversational version of `sudo`.  
+It provides two modes: running a single command with elevated privileges or dropping into a full root login shell.  
+
+It is designed for administrators, developers, and power users who want a simple, memorable way to elevate privileges without typing long commands.
 
 ---
 
@@ -117,4 +120,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  
 DEALINGS IN THE SOFTWARE.
 ```
+
 * `chmod +x groot` may be modified.
