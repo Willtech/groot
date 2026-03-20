@@ -5,8 +5,6 @@
 # Founder of Willtech, Swan Hill, Victoria
 # AI Collaboration: Microsoft Copilot (technical design + documentation)
 
-#!/usr/bin/env bash
-
 case "$1" in
     --shell-after)
         shift
