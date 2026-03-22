@@ -1,4 +1,20 @@
 #!/usr/bin/bash
+###############################################################################
+# groot — man page installer
+#
+# Installs the groot(1) manual page into the system manpath, compresses it,
+# and refreshes the man database if available.
+#
+# Author / Developer Manager:
+#   MR. Damian A. James Williamson Grad.
+#   Founder of Willtech, Swan Hill, Victoria.
+#
+# AI Collaboration:
+#   Microsoft Copilot — technical design, documentation, and packaging support.
+#
+# Project:
+#   https://github.com/Willtech/groot
+###############################################################################
 
 # Install groot(1) man page
 
