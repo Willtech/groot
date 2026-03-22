@@ -1,21 +1,28 @@
 #!/bin/bash
-## groot Install
-# Install script for groot
-# install script
-# Source Code produced by Willtech 2024
-# v1.1 hand coded by HRjJ
+## groot Build Script
+# Builds groot from source using shc + gcc
+# Source Code produced by Willtech 2026
+# v2.0 Koji-compatible build script
 
 CompletedMessage="Usage: groot PID\r\nCompleted!"
 
-if [ `whoami` != root ]; then
-    echo Please run as sudo user
-    exit
+set -e
+
+echo "Building groot..."
+
+# Ensure shc is available
+if ! command -v shc >/dev/null 2>&1; then
+    echo "Error: shc is required but not installed."
+    exit 1
 fi
 
-shc -f groot
-gcc groot.x.c -o groot.bin
+# Compile groot into groot.x.c
+shc -f src/groot
 
-cp ./groot.bin /usr/bin/groot
-chmod +x /usr/bin/groot
+# Compile groot.x.c into groot binary
+gcc src/groot.x.c -o groot
+
+# Clean up intermediate files (optional)
+rm -f src/groot.x.c src/groot.x
 
 echo -e ${CompletedMessage}
