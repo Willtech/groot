@@ -5,7 +5,7 @@
 # Source Code produced by Willtech 2024
 # v1.1 hand coded by HRjJ
 
-CompletedMessage="Usage: groot PID\r\nCompleted!"
+CompletedMessage="Usage: groot <command> \r\nCompleted!"
 
 if [ `whoami` != root ]; then
     echo Please run as sudo user
