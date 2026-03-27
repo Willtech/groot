@@ -16,6 +16,10 @@ It is designed for administrators, developers, and power users who want a simple
 
 ---
 
+![groot --shell-after whoami][1]
+
+---
+
 ## 🌱 Features
 
 - Run commands as root using a clean wrapper  
@@ -175,3 +179,5 @@ DEALINGS IN THE SOFTWARE.
 ```
 
 * `chmod +x groot` may be modified.
+
+[1]: https://github.com/Willtech/groot/blob/working/images/groot.png
